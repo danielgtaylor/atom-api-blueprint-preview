@@ -1,0 +1,55 @@
+@import "syntax-variables";
+
+@font-family: "Helvetica Neue", Helvetica, sans-serif;
+.api-blueprint-preview {
+  font-family: @font-family;
+  font-size: 14px;
+  line-height: 1.6;
+  background-color: #fff;
+  overflow: scroll;
+  box-sizing: border-box;
+  padding: 20px;
+
+  :not(.editor-colors) > code {
+    color: #999;
+    text-shadow: none;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 20px;
+  }
+
+  a {
+    color: #48f;
+  }
+
+  pre {
+    margin-bottom: 15px;
+  }
+
+  .apib-action {
+    margin: 15px 0;
+    padding: 6px 8px;
+    background-color: #ddd;
+    border-radius: 3px;
+
+    code {
+      color: #666;
+      text-shadow: none;
+    }
+  }
+}
+
+.api-blueprint-spinner {
+  margin: auto;
+  background-image: url(images/octocat-spinner-128.gif);
+  background-repeat: no-repeat;
+  background-size: 64px;
+  background-position: top center;
+  padding-top: 70px;
+  text-align: center;
+}

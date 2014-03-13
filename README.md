@@ -1,9 +1,28 @@
-# Markdown Preview package
+# API Blueprint Preview
 
-Show the rendered HTML markdown to the right of the current editor using
-`ctrl-shift-m`
+A plugin for the [Atom](http://atom.io/) editor to show the rendered HTML API Blueprint to the right of the current editor using `ctrl-shift-a`.
 
-It can be activated from the editor using the `ctrl-shift-m` key-binding and is
-currently enabled for `.markdown`, `.md`, `.mkd`, `.mkdown`, and `.ron` files.
+This plugin requires [aglio](https://github.com/danielgtaylor/aglio) to have been installed, via e.g:
 
-![](https://f.cloud.github.com/assets/671378/2265253/5b1c2ae8-9e7e-11e3-9d93-3fa7caae4710.png)
+```bash
+sudo npm install -g algio
+```
+
+![screenshot](https://f.cloud.github.com/assets/106826/2406778/3dafb1d0-aa79-11e3-8e77-d0c7320a073b.png)
+
+## Installation
+Install this plugin via the Atom settings or in a terminal:
+
+```bash
+apm install api-blueprint-preview
+```
+
+## Contributing
+
+Feel free to contribute! Pull requests are always welcome. If you add a new feature, please include a code snippet to exhibit the feature in the pull request.
+
+## License
+
+Copyright © 2014 Daniel G. Taylor
+
+http://dgt.mit-license.org/

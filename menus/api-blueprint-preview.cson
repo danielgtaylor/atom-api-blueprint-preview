@@ -1,10 +1,10 @@
 'menu': [
   'label': 'Packages'
   'submenu': [
-    'label': 'Markdown'
+    'label': 'API Blueprint'
     'submenu': [
       'label': 'Toggle Preview'
-      'command': 'markdown-preview:toggle'
+      'command': 'api-blueprint-preview:toggle'
     ]
   ]
 ]

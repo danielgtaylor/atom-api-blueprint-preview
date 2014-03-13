@@ -1,0 +1,146 @@
+mixin Parameters(params)
+    h6 Parameters
+    dl.dl-horizontal
+        each name in Object.keys(params)
+            - var param = params[name]
+            dt= name
+            dd
+                code= param.type
+                | &nbsp;
+                if param.required
+                    span (required)
+                else
+                    span (optional)
+                | &nbsp;
+                if param.default
+                    span
+                        strong Default:&nbsp;
+                        span= param.default
+                    | &nbsp;
+                if param.example
+                    span
+                        strong Example:&nbsp;
+                        span= param.example
+                != markdown(param.description)
+                if param.values.length
+                    p
+                        strong Choices:&nbsp;
+                        != '<code>' + param.values.join('</code>, <code>') + '</code>'
+
+mixin RequestResponse(title, request)
+    - var content = Object.keys(request.headers).length || request.body || request.schema
+    h5
+        = title
+        if request.name
+            | &nbsp;&nbsp;
+            code= request.name
+    if content
+        if Object.keys(request.headers).length
+            h6 Headers
+            pre
+                code
+                    each name in Object.keys(request.headers)
+                        != highlight(name + ': ' + request.headers[name].value, 'http')
+                        br
+        if request.body
+            h6 Body
+            pre
+                code!= highlight(request.body)
+        if request.schema
+            h6 Schema
+            pre
+                code!= highlight(request.schema)
+
+
+mixin Examples(examples)
+    each example in examples
+        each request in example.requests
+            +RequestResponse('Request', request)
+        each response in example.responses
+            +RequestResponse('Response', response)
+
+mixin ResourceGroup(resourceGroup, getButtonClass, multipage)
+    .panel.panel-default
+        .panel-heading
+            h3(id="#{slug(resourceGroup.name)}")
+                = resourceGroup.name || 'Resource Group'
+                | &nbsp;
+                a(href="##{multipage ? 'page:' : ''}#{slug(resourceGroup.name)}")
+                    i.fa.fa-link
+        .panel-body
+            if resourceGroup.description
+                != markdown(resourceGroup.description)
+            each resource in resourceGroup.resources
+                h4(id="#{slug(resourceGroup.name)}-#{slug(resource.name)}")
+                    = resource.name || 'Resources'
+                    | &nbsp;
+                    a(href="##{(multipage ? 'page:' + slug(resourceGroup.name) + ',header:' : '')}#{slug(resourceGroup.name)}-#{slug(resource.name)}")
+                        i.fa.fa-link
+                if resource.description
+                    != markdown(resource.description)
+                each action in resource.actions
+                    case action.method
+                        when 'POST': - var panelClass = 'panel-success'
+                        when 'GET': - var panelClass = 'panel-info'
+                        when 'PUT': - var panelClass = 'panel-warning'
+                        when 'PATCH': - var panelClass = 'panel-warning'
+                        when 'DELETE': - var panelClass = 'panel-danger'
+                        default: - var panelClass = 'panel-default'
+                    section.panel(class=panelClass, id="#{slug(resourceGroup.name)}-#{slug(resource.name)}-#{slug(action.method)}")
+                        .panel-heading
+                            if action.name
+                                span.pull-right(style="text-transform: lowercase")= action.name
+                            case action.method
+                                when 'POST': - var btnClass = 'btn-success'
+                                when 'GET': - var btnClass = 'btn-' + getButtonClass
+                                when 'PUT': - var btnClass = 'btn-warning'
+                                when 'PATCH': - var btnClass = 'btn-warning'
+                                when 'DELETE': - var btnClass = 'btn-danger'
+                                default: - var btnClass = 'btn-default'
+                            a.btn.btn-xs(class=btnClass, href="##{(multipage ? 'page:' + slug(resourceGroup.name) + ',header:' : '')}#{slug(resourceGroup.name)}-#{slug(resource.name)}-#{slug(action.method)}")= action.method
+                            | &nbsp;
+                            code= resource.uriTemplate
+                        if action.description
+                            .panel-body!= markdown(action.description)
+
+                        - var params = Object.keys(action.parameters).length ? action.parameters : resource.parameters
+                        if Object.keys(params).length
+                            +Parameters(params)
+                        if action.examples
+                            +Examples(action.examples)
+
+ style.
+    /* Highlight.js Theme Tomorrow */
+    .hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}
+
+header
+    .page-header
+        h1#top= api.name || 'API Documentation'
+
+.description!= markdown(api.description)
+
+each resourceGroup, index in api.resourceGroups
+    div
+        h3= resourceGroup.name || 'Resource Group'
+        if resourceGroup.description
+            != markdown(resourceGroup.description)
+        each resource in resourceGroup.resources
+            h4= resource.name || 'Resource'
+            if resource.description
+                != markdown(resource.description)
+            each action in resource.actions
+                p.apib-action
+                    button.btn.btn-xs(style="margin-top: -3px;")= action.method
+                    if action.name
+                        | &nbsp;
+                        = action.name || 'Action'
+                    | &nbsp;(
+                    code= resource.uriTemplate
+                    | )
+                if action.description
+                    != markdown(action.description)
+                - var params = Object.keys(action.parameters).length ? action.parameters : resource.parameters
+                if Object.keys(params).length
+                    +Parameters(params)
+                if action.examples
+                    +Examples(action.examples)

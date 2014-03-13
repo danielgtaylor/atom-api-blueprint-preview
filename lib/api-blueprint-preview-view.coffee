@@ -2,17 +2,18 @@ path = require 'path'
 {$, $$$, EditorView, ScrollView} = require 'atom'
 _ = require 'underscore-plus'
 {File} = require 'pathwatcher'
-{extensionForFenceName} = require './extension-helper'
+fs = require 'fs'
+{exec} = require 'child_process'
 
 module.exports =
-class MarkdownPreviewView extends ScrollView
+class ApiBlueprintPreviewView extends ScrollView
   atom.deserializers.add(this)
 
   @deserialize: (state) ->
-    new MarkdownPreviewView(state)
+    new ApiBlueprintPreviewView(state)
 
   @content: ->
-    @div class: 'markdown-preview native-key-bindings', tabindex: -1
+    @div class: 'api-blueprint-preview native-key-bindings', tabindex: -1
 
   constructor: ({@editorId, filePath}) ->
     super
@@ -24,7 +25,7 @@ class MarkdownPreviewView extends ScrollView
       @handleEvents()
 
   serialize: ->
-    deserializer: 'MarkdownPreviewView'
+    deserializer: 'ApiBlueprintPreviewView'
     filePath: @getPath()
     editorId: @editorId
 
@@ -48,7 +49,7 @@ class MarkdownPreviewView extends ScrollView
     else
       atom.packages.once 'activated', =>
         resolve()
-        @renderMarkdown()
+        @renderApiBlueprint()
 
   editorForId: (editorId) ->
     for editor in atom.workspace.getEditors()
@@ -56,12 +57,12 @@ class MarkdownPreviewView extends ScrollView
     null
 
   handleEvents: ->
-    @subscribe atom.syntax, 'grammar-added grammar-updated', _.debounce((=> @renderMarkdown()), 250)
+    @subscribe atom.syntax, 'grammar-added grammar-updated', _.debounce((=> @renderApiBlueprint()), 250)
     @subscribe this, 'core:move-up', => @scrollUp()
     @subscribe this, 'core:move-down', => @scrollDown()
 
     changeHandler = =>
-      @renderMarkdown()
+      @renderApiBlueprint()
       pane = atom.workspace.paneForUri(@getUri())
       if pane? and pane isnt atom.workspace.getActivePane()
         pane.activateItem(this)
@@ -71,21 +72,25 @@ class MarkdownPreviewView extends ScrollView
     else if @editor?
       @subscribe(@editor.getBuffer(), 'contents-modified', changeHandler)
 
-  renderMarkdown: ->
+  renderApiBlueprint: ->
     @showLoading()
     if @file?
-      @file.read().then (contents) => @renderMarkdownText(contents)
+      @file.read().then (contents) => @renderApiBlueprintText(contents)
     else if @editor?
-      @renderMarkdownText(@editor.getText())
+      @renderApiBlueprintText(@editor.getText())
 
-  renderMarkdownText: (text) ->
-    roaster = require 'roaster'
-    sanitize = true
-    roaster text, {sanitize}, (error, html) =>
-      if error
-        @showError(error)
+  renderApiBlueprintText: (text) ->
+    fs.writeFileSync '/tmp/atom.apib', text
+    # Env hack... helps find aglio binary
+    env =
+        PATH: process.env.PATH + ':/usr/local/bin'
+    template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
+    exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env}, (err, stdout, stderr) =>
+      if err
+        @showError(err)
       else
-        @html(@tokenizeCodeBlocks(@resolveImagePaths(html)))
+        console.log stderr
+        @html @resolveImagePaths stdout
 
   getTitle: ->
     if @file?
@@ -93,13 +98,13 @@ class MarkdownPreviewView extends ScrollView
     else if @editor?
       "#{@editor.getTitle()} Preview"
     else
-      "Markdown Preview"
+      "ApiBlueprint Preview"
 
   getUri: ->
     if @file?
-      "markdown-preview://#{@getPath()}"
+      "api-blueprint-preview://#{@getPath()}"
     else
-      "markdown-preview://editor/#{@editorId}"
+      "api-blueprint-preview://editor/#{@editorId}"
 
   getPath: ->
     if @file?
@@ -111,12 +116,12 @@ class MarkdownPreviewView extends ScrollView
     failureMessage = result?.message
 
     @html $$$ ->
-      @h2 'Previewing Markdown Failed'
+      @h2 'Previewing ApiBlueprint Failed'
       @h3 failureMessage if failureMessage?
 
   showLoading: ->
     @html $$$ ->
-      @div class: 'markdown-spinner', 'Loading Markdown\u2026'
+      @div class: 'api-blueprint-spinner', 'Loading ApiBlueprint\u2026'
 
   resolveImagePaths: (html) =>
     html = $(html)
@@ -127,29 +132,5 @@ class MarkdownPreviewView extends ScrollView
       src = img.attr('src')
       continue if src.match /^(https?:\/\/)/
       img.attr('src', path.resolve(path.dirname(@getPath()), src))
-
-    html
-
-  tokenizeCodeBlocks: (html) =>
-    html = $(html)
-    preList = $(html.filter("pre"))
-
-    for preElement in preList.toArray()
-      $(preElement).addClass("editor-colors")
-      codeBlock = $(preElement.firstChild)
-
-      # go to next block unless this one has a class
-      continue unless className = codeBlock.attr('class')
-
-      fenceName = className.replace(/^lang-/, '')
-      # go to next block unless the class name matches `lang`
-      continue unless extension = extensionForFenceName(fenceName)
-      text = codeBlock.text()
-
-      grammar = atom.syntax.selectGrammar("foo.#{extension}", text)
-
-      codeBlock.empty()
-      for tokens in grammar.tokenizeLines(text)
-        codeBlock.append(EditorView.buildLineHtml({ tokens, text }))
 
     html
