@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "fs-plus": "2.x",
-    "pathwatcher": "0.16.0",
-    "temp": "0.6.x",
+    "pathwatcher": "~2.0.7",
+    "temp": "~0.8.1",
     "underscore-plus": "1.x",
     "wrench": "1.5.x"
   }
