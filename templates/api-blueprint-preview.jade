@@ -3,7 +3,7 @@ mixin Parameters(params)
     dl.dl-horizontal
         each name in Object.keys(params)
             - var param = params[name]
-            dt= name
+            dt= param.name
             dd
                 code= param.type
                 | &nbsp;
@@ -40,7 +40,7 @@ mixin RequestResponse(title, request)
             pre
                 code
                     each name in Object.keys(request.headers)
-                        != highlight(name + ': ' + request.headers[name].value, 'http')
+                        != highlight(request.headers[name].name + ': ' + request.headers[name].value, 'http')
                         br
         if request.body
             h6 Body
