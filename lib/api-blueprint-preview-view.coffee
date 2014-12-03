@@ -84,8 +84,10 @@ class ApiBlueprintPreviewView extends ScrollView
     # Env hack... helps find aglio binary
     env =
         PATH: process.env.PATH + ':/usr/local/bin'
+    options =
+        maxBuffer: 2 * 1024 * 1024 # Default: 200*1024
     template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
-    exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env}, (err, stdout, stderr) =>
+    exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env, options}, (err, stdout, stderr) =>
       if err
         @showError(err)
       else
