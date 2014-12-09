@@ -97,7 +97,7 @@ mixin ResourceGroup(resourceGroup, getButtonClass, multipage)
                                 when 'PATCH': - var btnClass = 'btn-warning'
                                 when 'DELETE': - var btnClass = 'btn-danger'
                                 default: - var btnClass = 'btn-default'
-                            a.btn.btn-xs(class=btnClass, href="##{(multipage ? 'page:' + slug(resourceGroup.name) + ',header:' : '')}#{slug(resourceGroup.name)}-#{slug(resource.name)}-#{slug(action.method)}")= action.method
+                            a.btn.btn-primary.btn-xs(class=btnClass, href="##{(multipage ? 'page:' + slug(resourceGroup.name) + ',header:' : '')}#{slug(resourceGroup.name)}-#{slug(resource.name)}-#{slug(action.method)}")= action.method
                             | &nbsp;
                             code= resource.uriTemplate
                         if action.description
@@ -130,7 +130,7 @@ each resourceGroup, index in api.resourceGroups
                 != markdown(resource.description)
             each action in resource.actions
                 p.apib-action
-                    button.btn.btn-xs(style="margin-top: -3px;")= action.method
+                    button.btn.btn-primary.btn-xs(style="margin-top: -3px;")= action.method
                     if action.name
                         | &nbsp;
                         = action.name || 'Action'
