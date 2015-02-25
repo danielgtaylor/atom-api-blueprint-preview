@@ -82,8 +82,9 @@ class ApiBlueprintPreviewView extends ScrollView
   renderApiBlueprintText: (text) ->
     fs.writeFileSync '/tmp/atom.apib', text
     # Env hack... helps find aglio binary
-    env =
-        PATH: process.env.PATH + ':/usr/local/bin'
+    env = Object.create(process.env)
+    npm_bin = atom.project.getPaths().map (p) -> "#{path.join(p, 'node_modules', '.bin')}:"
+    env.PATH = "#{npm_bin.join()}#{env.PATH}:/usr/local/bin"
     template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
     exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env}, (err, stdout, stderr) =>
       if err
