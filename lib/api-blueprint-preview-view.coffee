@@ -83,8 +83,8 @@ class ApiBlueprintPreviewView extends ScrollView
     fs.writeFileSync '/tmp/atom.apib', text
     # Env hack... helps find aglio binary
     env = Object.create(process.env)
-    npm_bin = atom.project.getPaths().map (p) -> "#{path.join(p, 'node_modules', '.bin')}:"
-    env.PATH = "#{npm_bin.join()}#{env.PATH}:/usr/local/bin"
+    npm_bin = atom.project.getPaths().map (p) -> path.join(p, 'node_modules', '.bin')
+    env.PATH = npm_bin.concat(env.PATH, '/usr/local/bin').join(path.delimiter)
     template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
     exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env}, (err, stdout, stderr) =>
       if err
