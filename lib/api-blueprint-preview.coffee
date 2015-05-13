@@ -18,7 +18,7 @@ module.exports =
     atom.workspaceView.command 'api-blueprint-preview:toggle', =>
       @toggle()
 
-    atom.workspace.registerOpener (uriToOpen) ->
+    atom.workspace.addOpener (uriToOpen) ->
       {protocol, host, pathname} = url.parse(uriToOpen)
       pathname = decodeURI(pathname) if pathname
       return unless protocol is 'api-blueprint-preview:'
