@@ -9,6 +9,7 @@
     "atom": "*"
   },
   "dependencies": {
+    "atom-space-pen-views": "^2.0.3",
     "fs-plus": "2.x",
     "pathwatcher": "^3.3.1",
     "temp": "~0.8.1",

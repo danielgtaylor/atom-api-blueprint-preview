@@ -1,5 +1,5 @@
 path = require 'path'
-{$, $$$, EditorView, ScrollView} = require 'atom'
+{$, $$$, EditorView, ScrollView} = require 'atom-space-pen-views'
 _ = require 'underscore-plus'
 {File} = require 'pathwatcher'
 fs = require 'fs'
