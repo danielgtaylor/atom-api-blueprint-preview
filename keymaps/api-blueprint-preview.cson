@@ -1,2 +1,16 @@
-'atom-workspace':
-  'ctrl-A': 'api-blueprint-preview:toggle'
+'atom-workspace, atom-workspace atom-text-editor':
+  'ctrl-shift-a': 'api-blueprint-preview:toggle'
+
+'.platform-darwin .api-blueprint-preview':
+  'cmd-+': 'api-blueprint-preview:zoom-in'
+  'cmd-=': 'api-blueprint-preview:zoom-in'
+  'cmd--': 'api-blueprint-preview:zoom-out'
+  'cmd-_': 'api-blueprint-preview:zoom-out'
+  'cmd-0': 'api-blueprint-preview:reset-zoom'
+
+'.platform-win32 .api-blueprint-preview, .platform-linux .api-blueprint-preview':
+  'ctrl-+': 'api-blueprint-preview:zoom-in'
+  'ctrl-=': 'api-blueprint-preview:zoom-in'
+  'ctrl--': 'api-blueprint-preview:zoom-out'
+  'ctrl-_': 'api-blueprint-preview:zoom-out'
+  'ctrl-0': 'api-blueprint-preview:reset-zoom'

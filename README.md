@@ -23,6 +23,6 @@ Feel free to contribute! Pull requests are always welcome. If you add a new feat
 
 ## License
 
-Copyright © 2014 Daniel G. Taylor
+Copyright © 2015 Daniel G. Taylor. Based on the Markdown Preview plugin.
 
 http://dgt.mit-license.org/
