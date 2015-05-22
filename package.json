@@ -1,6 +1,6 @@
 {
   "name": "api-blueprint-preview",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "main": "./lib/main",
   "description": "Open a rendered version of the Markdown in the current editor with `ctrl-shift-m`.",
   "repository": "https://github.com/danielgtaylor/atom-api-blueprint-preview",
