@@ -22,7 +22,8 @@ exports.toHTML = (text='', filePath, grammar, callback) ->
   render text, filePath, callback
 
 render = (text, filePath, callback) ->
-  fs.writeFileSync '/tmp/atom.apib', text
+  tempFile = '/tmp/atom.apib'
+  fs.writeFileSync tempFile, text
   # Env hack... helps find aglio binary
   options =
       maxBuffer: 2 * 1024 * 1024 # Default: 200*1024
@@ -34,6 +35,7 @@ render = (text, filePath, callback) ->
   exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", {env, options}, (err, stdout, stderr) =>
     if err then return callback(err)
     console.log stderr
+    fs.removeSync tempFile
     callback null, resolveImagePaths(stdout)
 
 resolveImagePaths = (html, filePath) ->
