@@ -30,7 +30,8 @@ render = (text, filePath, callback) ->
   npm_bin = atom.project.getPaths().map (p) -> path.join(p, 'node_modules', '.bin')
   env.PATH = npm_bin.concat(env.PATH, '/usr/local/bin').join(path.delimiter)
   template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
-  exec "aglio -i /tmp/atom.apib -t #{template} -o -", {env, options}, (err, stdout, stderr) =>
+  includePath = path.dirname filePath # for Aglio include directives
+  exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", {env, options}, (err, stdout, stderr) =>
     if err then return callback(err)
     console.log stderr
     callback null, resolveImagePaths(stdout)
