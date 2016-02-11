@@ -22,7 +22,10 @@ exports.toHTML = (text='', filePath, grammar, callback) ->
   render text, filePath, callback
 
 render = (text, filePath, callback) ->
-  tempFile = '/tmp/atom.apib'
+  # Use current time and random number to generate a temp file name
+  #   This way each rendering execution have their own unshared temp file
+  #   This avoids error when rendering multiple times in a short period of time.
+  tempFile = '/tmp/atom' + (new Date).getTime() + '_' + Math.floor(Math.random() * 9007199254740991) + '.apib'
   fs.writeFileSync tempFile, text
   # Env hack... helps find aglio binary
   options =
