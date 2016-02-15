@@ -34,6 +34,7 @@ mixin RequestResponse(title, request)
         if request.name
             | &nbsp;&nbsp;
             code= request.name
+    != markdown(request.description)
     if content
         if Object.keys(request.headers).length
             h6 Headers
