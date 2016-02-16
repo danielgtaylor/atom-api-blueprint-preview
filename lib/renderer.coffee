@@ -48,6 +48,7 @@ resolveImagePaths = (html, filePath) ->
     img = o(imgElement)
     if src = img.attr('src')
       continue if src.match(/^(https?|atom):\/\//)
+      continue if src.startsWith('data:image/')
       continue if src.startsWith(process.resourcesPath)
       continue if src.startsWith(resourcePath)
       continue if src.startsWith(packagePath)
@@ -59,3 +60,4 @@ resolveImagePaths = (html, filePath) ->
         img.attr('src', path.resolve(path.dirname(filePath), src))
 
   o.html()
+
