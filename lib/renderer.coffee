@@ -1,4 +1,5 @@
 {exec} = require 'child_process'
+os = require 'os'
 path = require 'path'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
@@ -25,7 +26,7 @@ render = (text, filePath, callback) ->
   # Use current time and random number to generate a temp file name
   #   This way each rendering execution have their own unshared temp file
   #   This avoids error when rendering multiple times in a short period of time.
-  tempFile = '/tmp/atom' + (new Date).getTime() + '_' + Math.floor(Math.random() * 9007199254740991) + '.apib'
+  tempFile = path.join(os.tmpdir(), 'atom' + (new Date).getTime() + '_' + Math.floor(Math.random() * 9007199254740991) + '.apib')
   fs.writeFileSync tempFile, text
   # Env hack... helps find aglio binary
   options =
@@ -60,4 +61,3 @@ resolveImagePaths = (html, filePath) ->
         img.attr('src', path.resolve(path.dirname(filePath), src))
 
   o.html()
-
