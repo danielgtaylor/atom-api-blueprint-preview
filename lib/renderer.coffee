@@ -1,4 +1,5 @@
 {exec} = require 'child_process'
+os = require 'os'
 path = require 'path'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
@@ -22,17 +23,28 @@ exports.toHTML = (text='', filePath, grammar, callback) ->
   render text, filePath, callback
 
 render = (text, filePath, callback) ->
-  tempFile = '/tmp/atom.apib'
+
+  # Use current time and random number to generate a temp file name
+  #   This way each rendering execution have their own unshared temp file
+  #   This avoids error when rendering multiple times in a short period of time.
+  tempFile = path.join(os.tmpdir(), 'atom' + (new Date).getTime() + '_' + Math.floor(Math.random() * 9007199254740991) + '.apib')
   fs.writeFileSync tempFile, text
+
   # Env hack... helps find aglio binary
-  options =
-      maxBuffer: 2 * 1024 * 1024 # Default: 200*1024
-  env = Object.create(process.env)
+  newEnv = Object.create(process.env)
   npm_bin = atom.project.getPaths().map (p) -> path.join(p, 'node_modules', '.bin')
-  env.PATH = npm_bin.concat(env.PATH, '/usr/local/bin').join(path.delimiter)
+  newEnv.PATH = npm_bin.concat(newEnv.PATH, '/usr/local/bin').join(path.delimiter)
+
   template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
+
   includePath = path.dirname filePath # for Aglio include directives
-  exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", {env, options}, (err, stdout, stderr) =>
+
+  options = {
+      maxBuffer: Infinity # Default: 200*1024, set to Infinity to avoid stdout maxBuffer exceeded
+      env: newEnv # Use the new environment to help find aglio binary
+  }
+
+  exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", options, (err, stdout, stderr) =>
     if err then return callback(err)
     console.log stderr
     fs.removeSync tempFile
@@ -45,6 +57,7 @@ resolveImagePaths = (html, filePath) ->
     img = o(imgElement)
     if src = img.attr('src')
       continue if src.match(/^(https?|atom):\/\//)
+      continue if src.startsWith('data:image/')
       continue if src.startsWith(process.resourcesPath)
       continue if src.startsWith(resourcePath)
       continue if src.startsWith(packagePath)
