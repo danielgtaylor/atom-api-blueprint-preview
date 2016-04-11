@@ -48,7 +48,7 @@ render = (text, filePath, callback) ->
     if err then return callback(err)
     console.log stderr
     fs.removeSync tempFile
-    callback null, resolveImagePaths(stdout)
+    callback null, resolveImagePaths(stdout, filePath)
 
 resolveImagePaths = (html, filePath) ->
   [rootDirectory] = atom.project.relativizePath(filePath)
