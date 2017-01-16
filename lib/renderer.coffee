@@ -25,14 +25,13 @@ render = (text, filePath, callback) ->
   tempFile = '/tmp/atom.apib'
   fs.writeFileSync tempFile, text
   # Env hack... helps find aglio binary
-  options =
-      maxBuffer: 2 * 1024 * 1024 # Default: 200*1024
+  maxBuffer = 2 * 1024 * 1024 # Default: 200*1024
   env = Object.create(process.env)
   npm_bin = atom.project.getPaths().map (p) -> path.join(p, 'node_modules', '.bin')
   env.PATH = npm_bin.concat(env.PATH, '/usr/local/bin').join(path.delimiter)
   template = "#{path.dirname __dirname}/templates/api-blueprint-preview.jade"
   includePath = path.dirname filePath # for Aglio include directives
-  exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", {env, options}, (err, stdout, stderr) =>
+  exec "aglio -i #{tempFile} -t #{template} -n #{includePath} -o -", {env, maxBuffer}, (err, stdout, stderr) =>
     if err then return callback(err)
     console.log stderr
     fs.removeSync tempFile
